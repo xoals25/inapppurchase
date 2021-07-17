@@ -1,0 +1,7 @@
+{
+  "name": "inAppPurchase",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
