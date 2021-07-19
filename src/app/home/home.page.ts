@@ -8,9 +8,11 @@ import {IAPProduct} from "@ionic-native/in-app-purchase-2";
 
 const test1 = 'test';
 const test2 = 'test.test.test.xoals';
+const test6 = 'test.test.test.xoals.noconsume';
 const test3 = 'test.test.subscribe';
 const test4 = 'test.test.subscribe2';
 const test5 = 'test.test.subscribe3';
+
 
 
 @Component({
@@ -42,15 +44,13 @@ export class HomePage {
 
       // Get the real product information
       this.store.ready(() => {
-
-        console.log(this.store.products.length+" id 확인 과연");
         this.products = this.store.products;
         this.ref.detectChanges();
       });
 
-      this.registerHandlers(test3);
-      this.registerHandlers(test4);
-      this.registerHandlers(test5);
+      // this.registerHandlers(test3);
+      // this.registerHandlers(test4);
+      // this.registerHandlers(test5);
 
     });
   }
@@ -99,20 +99,11 @@ export class HomePage {
       }, {
         id: test2,
         type: this.store.CONSUMABLE,
-        }]
+        }, {
+        id: test6,
+        type: this.store.NON_CONSUMABLE,
+      }]
     );
-    //
-    // this.store.register({
-    //   id: test1,
-    //   type: this.store.CONSUMABLE,
-    // });
-    //
-    // this.store.register({
-    //   id: test2,
-    //   type: this.store.CONSUMABLE,
-    // });
-
-
     this.store.refresh();
 
   }
@@ -124,23 +115,20 @@ export class HomePage {
     .approved((p: IAPProduct) => {
       // Handle the product deliverable
       if (p.id === test1) {
-        this.isPro = true;
+        this.gems += 200;
       } else if (p.id === test2) {
         this.gems += 100;
+      }
+      else if(p.id === test6){
+        this.isPro = true;
       }
       this.ref.detectChanges();
       return p.verify();
     })
-    .verified((p: IAPProduct) => {
-      p.finish();
-
-    });
-    this.store.when('my_product_id')
-    .cancelled(p=>{
-      console.log('cancelled!!!!' + p) });
+    .verified((p: IAPProduct) =>p.finish());
 
     // Specific query for one ID
-    this.store.when(test1).owned((p: IAPProduct) => {
+    this.store.when(test6).owned((p: IAPProduct) => {
       this.isPro = true;
     });
 
@@ -149,9 +137,7 @@ export class HomePage {
   purchase(product: IAPProduct) {
     this.store.order(product).then(p => {
       // Purchase in progress!
-      console.log("구입 완료 ");
     }, e => {
-      console.log("에러 발생!!!");
       this.presentAlert('Failed', `Failed to purchase: ${e}`);
     });
   }
