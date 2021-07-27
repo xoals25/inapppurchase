@@ -8,15 +8,17 @@
 
 <ion-content>
   <ion-list>
-    <ion-item button *ngFor="let p of products" (click)="purchase(p)" detail="false">
-      <ion-label class="ion-text-wrap">
-        {{ p.title }}
-        <p>{{ p.description }}</p>
-      </ion-label>
-      <ion-button slot="end">
-        {{ p.price }} {{ p.currency }}
-      </ion-button>
-    </ion-item>
+    <ng-container  *ngFor="let p of products" >
+      <ion-item button *ngIf="p.id!=='com.xoals.inapp'" (click)="purchase(p)" detail="false">
+        <ion-label class="ion-text-wrap">
+          {{ p.title }}
+          <p>{{ p.description }}</p>
+        </ion-label>
+        <ion-button slot="end">
+          {{ p.price }} {{ p.currency }}
+        </ion-button>
+      </ion-item>
+    </ng-container>
   </ion-list>
 
   <ion-button expand="full" (click)="restore()">Restore</ion-button>
@@ -26,5 +28,21 @@
   </ion-item>
   <ion-item>
     Is Pro: {{ isPro }}
+  </ion-item>
+
+  <ion-item >
+    (주) 상품 구독 상태 그룹1 : {{ isMonthOneMore }}
+  </ion-item>
+  <ion-item>
+    (월) 상품 구독 상태 그룹1: {{ isDayOneMore }}
+  </ion-item>
+  <ion-item>
+    (주-1주 무료) 상품 구독 상태 그룹1 : {{ isDayNo }}
+  </ion-item>
+  <ion-item>
+    (월-1개월 무료) 상품 구독 상태 그룹1  : {{ freeAfterDay }}
+  </ion-item>
+  <ion-item>
+    (주-1주무료) 상품 구독 상태 그룹2: {{ freeAfterDay2 }}
   </ion-item>
 </ion-content>

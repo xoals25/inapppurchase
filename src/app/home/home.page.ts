@@ -1,142 +1,92 @@
-import {ChangeDetectorRef, Component} from '@angular/core';
-import {AlertController, Platform} from "@ionic/angular";
-import {InAppPurchase2} from "@ionic-native/in-app-purchase-2/ngx";
-import {error} from "@angular/compiler/src/util";
-import {BrowserService} from "../services/browser.service";
-import {InAppPurchase} from "@ionic-native/in-app-purchase/ngx";
-import {IAPProduct} from "@ionic-native/in-app-purchase-2";
+import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {AlertController, Platform} from '@ionic/angular';
+import {InAppPurchase2} from '@ionic-native/in-app-purchase-2/ngx';
+import {error} from '@angular/compiler/src/util';
+import {BrowserService} from '../services/browser.service';
+import {InAppPurchase} from '@ionic-native/in-app-purchase/ngx';
+import {IAPProduct} from '@ionic-native/in-app-purchase-2';
 
-const test1 = 'test';
-const test2 = 'test.test.test.xoals';
-const test6 = 'test.test.test.xoals.noconsume';
-const test3 = 'test.test.subscribe';
-const test4 = 'test.test.subscribe2';
-const test5 = 'test.test.subscribe3';
-
-
-
+const test1 = 'xoals.xoals.xoals.test1';
+const test2 = 'xoals.xoals.xoals.test2';
+const test3 = 'xoals.xoals.xoals.test3';
+const test4 = 'xoals.xoals.xoals.test4';
+const test5 = 'xoals.xoals.xoals.test5';
+const test6 = 'com.xoals.inapp';
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
 })
-export class HomePage {
+
+
+export class HomePage implements OnInit{
   gems = 0;
   isPro = false;
-  products: IAPProduct[] = [];
+  productIds =[test1,test2,test3,test4,test5,test6];
+  products: IAPProduct[];
+  isMonthOneMore= false;
+  isDayOneMore= false;
+  isDayNo= false;
+  freeAfterDay= false;
+  freeAfterDay2= false;
+  freeAfterDay3= false;
+  ck = false;
 
   constructor(private plt: Platform, private store: InAppPurchase2, private alertController: AlertController, private ref: ChangeDetectorRef) {
     this.plt.ready().then(() => {
       // Only for debugging!
-      // this.store.verbosity = this.store.DEBUG;
-      this.store.when(test3).owned((p:IAPProduct)=>{
-
-        // console.log('정기 결제 구독1 확인');
-      });
-      this.store.when(test4).owned((p:IAPProduct)=>{
-        // console.log('정기 결제 구독2 확인');
-      });
-
-      this.registerProducts();
-
       this.setupListeners();
-
-
+      // Set Debug High
+      this.store.verbosity = this.store.DEBUG;
       // Get the real product information
       this.store.ready(() => {
+        console.log(' 길이 ' + this.store.products.length);
         this.products = this.store.products;
         this.ref.detectChanges();
+
       });
-
-      // this.registerHandlers(test3);
-      // this.registerHandlers(test4);
-      // this.registerHandlers(test5);
-
+      this.registerProducts();
     });
   }
 
-  registerHandlers(productId) {
-    // Handlers
-    //
-    // this.store.when(productId).owned( (product: IAPProduct) => {
-    //   //Place code to activate what happens when your user already owns the product here
-    //   // console.log(productId+' : 확인 owned : '+product.owned);
-    //   // console.log(productId+' : 확인 canPurchase : '+product.canPurchase);
-    //   console.log(productId+' : 확인 전체 : ' + JSON.stringify(product));
-    // });
+  ngOnInit() {
 
-    // this.store.when(productId).registered( (product: IAPProduct) => {
-    //   console.log(productId+' : 확인 Registered: ' + JSON.stringify(product));
-    // });
-
-    this.store.when(productId).updated( (product: IAPProduct) => {
-      console.log(productId+' : 확인 updated' + JSON.stringify(product));
-    });
-    //
-    // this.store.when(productId).cancelled( (product) => {
-    //   console.log(productId+' : 확인 cancelled' + JSON.stringify(product));
-    // });
-
-    // Overall Store Error
-    this.store.error( (err) => {
-      console.log(productId+' : err : '+err);
-    });
   }
 
   registerProducts() {
     this.store.register([{
-        id: test3,
-        type: this.store.PAID_SUBSCRIPTION,
-      },{
-        id: test4,
-        type: this.store.PAID_SUBSCRIPTION,
-      }, {
-        id: test5,
-        type: this.store.PAID_SUBSCRIPTION,
-      }, {
         id: test1,
-        type: this.store.CONSUMABLE,
-      }, {
+        type: this.store.PAID_SUBSCRIPTION
+      },{
         id: test2,
-        type: this.store.CONSUMABLE,
-        }, {
-        id: test6,
-        type: this.store.NON_CONSUMABLE,
+        type: this.store.PAID_SUBSCRIPTION
+      },{
+        id: test3,
+        type: this.store.FREE_SUBSCRIPTION
+      },{
+        id:test4,
+        type: this.store.FREE_SUBSCRIPTION
+      },{
+        id:test5,
+        type: this.store.FREE_SUBSCRIPTION
       }]
     );
     this.store.refresh();
-
   }
 
   setupListeners() {
-    // this.store.validator = 'https://billing.fovea.cc/';
+    // this.store.validator ='https://validator.fovea.cc/v1/validate?appName=com.xoals.xoals.inapp&apiKey=94979341-8659-4003-b010-e44f8cce90a9';
     // General query to all products
-    this.store.when('product')
-    .approved((p: IAPProduct) => {
-      // Handle the product deliverable
-      if (p.id === test1) {
-        this.gems += 200;
-      } else if (p.id === test2) {
-        this.gems += 100;
-      }
-      else if(p.id === test6){
-        this.isPro = true;
-      }
-      this.ref.detectChanges();
-      return p.verify();
-    })
-    .verified((p: IAPProduct) =>p.finish());
-
-    // Specific query for one ID
-    this.store.when(test6).owned((p: IAPProduct) => {
-      this.isPro = true;
-    });
-
+    this.onApproved(test1);
+    this.onApproved(test3);
+    this.onApproved(test4);
+    this.onApproved(test5);
+    this.onApproved(test2);
   }
 
   purchase(product: IAPProduct) {
     this.store.order(product).then(p => {
-      // Purchase in progress!
+      // this.dataChange(p);
     }, e => {
       this.presentAlert('Failed', `Failed to purchase: ${e}`);
     });
@@ -144,7 +94,9 @@ export class HomePage {
 
   // To comply with AppStore rules
   restore() {
-    this.store.refresh();
+    this.store.refresh().completed(() => {
+      console.log('asd');
+    });
   }
 
   async presentAlert(header, message) {
@@ -157,7 +109,66 @@ export class HomePage {
     await alert.present();
   }
 
-  log(m: string){
-    console.log('ERROR MESSAGE !!!!!!!!!!!' + m);
+  dataChange(p:IAPProduct): void{
+      // if(p.id==='com.xoals.inapp'){
+      //   console.log('application 확인후 제거!!')
+      //   p.set('state','');
+      //   p.set('valid','false');
+      //   p.set('in_app_ownership_type','no');
+      //   // this.products = this.store.products;
+      //   // this.ref.detectChanges();
+      // }
+  }
+  onApproved( id : string){
+    this.store.when(id).approved((p: IAPProduct) => {
+      // Handle the product deliverable
+      if(id===p.id){
+        this.boolDataChange(id,true);
+      }
+      this.ref.detectChanges();
+      return p.verify();
+    })
+    .verified((p: IAPProduct) => {
+      p.finish();
+    });
+
+    /*({id, owned}: IAPProduct)*/
+    this.store.when(id).updated(p=>{
+      console.log(`[데이터 확인확인] id = ${p.id}  / owned = ${p.owned}  /  state = ${p.state}`);
+      if(p.owned){
+        if(p.id === id){
+          this.boolDataChange(id,true);
+        }
+      }
+      else{
+        if(p.id === id){
+          this.boolDataChange(id,false);
+        }
+      }
+      if(p.id===test6){
+        p.set('appStoreReceipt',' ');
+      }
+
+      this.ref.detectChanges();
+    });
+  }
+
+  boolDataChange(id : string,bool: boolean){
+    if(id===test1){
+      this.isMonthOneMore = bool;
+    }
+    else if(id===test2){
+      this.isDayOneMore = bool;
+    }
+    else if(id===test3){
+      this.isDayNo = bool;
+    }
+    else if(id===test4){
+      this.freeAfterDay = bool;
+    }
+    else if(id===test5){
+      this.freeAfterDay2 = bool;
+    }
   }
 }
+

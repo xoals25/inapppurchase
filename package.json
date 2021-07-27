@@ -29,6 +29,7 @@
     "@ionic-native/in-app-purchase-2": "^5.34.0",
     "@ionic/angular": "^5.5.2",
     "angular-bowser": "0.0.4",
+    "angular-in-memory-web-api": "^0.11.0",
     "bowser": "^2.11.0",
     "cordova-plugin-inapppurchase": "^1.2.0",
     "cordova-plugin-purchase": "^10.6.0",
